@@ -1,0 +1,153 @@
+﻿<Window x:Class="OurDecor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Список продукции компании"
+        Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Icon="Resources/logo.ico"
+        FontFamily="{StaticResource MainFont}"
+        FontSize="20"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка -->
+        <Border Grid.Row="0" Background="{StaticResource SecondaryBrush}" Padding="15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Source="Resources/logo.png"
+                       Width="50" Height="50"
+                       VerticalAlignment="Center"
+                       Grid.Column="0"/>
+
+                <TextBlock Text="Список продукции компании"
+                           Grid.Column="1"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+
+                <Button x:Name="AddButton"
+                        Grid.Column="2"
+                        Content="Добавить продукт"
+                        Style="{StaticResource PrimaryButton}"
+                        Click="AddButton_Click"
+                        Width="240"
+                        Height="50"/>
+            </Grid>
+        </Border>
+
+        <!-- Список продукции -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20,15">
+            <StackPanel>
+                <ItemsControl x:Name="ProductsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Прямоугольная карточка -->
+                            <Border Background="White"
+                                    BorderBrush="#D1D1D1"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Margin="0,0,0,15"
+                                    Padding="15"
+                                    MouseDown="ProductCard_MouseDown">
+
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="Effect" Value="{x:Null}"/>
+                                        <Style.Triggers>
+                                            <!-- Появление тени при наведении -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                                <Setter Property="Background" Value="#FAFAFA"/>
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="Black" BlurRadius="12" ShadowDepth="4" Opacity="0.25"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Левая часть -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                                        <TextBlock Text="{Binding Name}" FontSize="24" FontWeight="Bold" Foreground="Black"/>
+                                        <TextBlock Text="{Binding ProductTypeName}" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,2,0,8"/>
+                                        <TextBlock Text="{Binding Article, StringFormat=Артикул: {0}}" FontSize="16" Foreground="#555"/>
+                                        <TextBlock Text="{Binding MinCost, StringFormat=Мин. стоимость: {0:N2} р.}" FontSize="16" Foreground="#555"/>
+                                        <TextBlock Text="{Binding Width, StringFormat=Ширина: {0:N2} м}" FontSize="16" Foreground="#555"/>
+                                    </StackPanel>
+
+                                    <!-- Правая часть -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding TotalCost, StringFormat={}{0:N2} р.}" FontSize="22" FontWeight="Bold" Foreground="Green" HorizontalAlignment="Center"/>
+                                        <Button Content="Материалы"
+                                                Width="170"
+                                                Height="45"
+                                                FontSize="16"
+                                                Margin="0,10,0,0"
+                                                Click="CalculateMaterialsButton_Click"
+                                                Background="#4CAF50"
+                                                Foreground="White"
+                                                BorderBrush="#388E3C"
+                                                Cursor="Hand">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}"
+                                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                                        BorderThickness="1"
+                                                                        CornerRadius="6"
+                                                                        Padding="{TemplateBinding Padding}">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#66BB6A"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Нижняя строка статуса -->
+        <Border Grid.Row="2" Background="{StaticResource SecondaryBrush}" Padding="10">
+            <DockPanel>
+                <TextBlock x:Name="StatusText" Text="Готово" DockPanel.Dock="Left"/>
+                <TextBlock Text="{Binding ElementName=ProductsItemsControl, Path=Items.Count, StringFormat=Всего продуктов: {0}}" DockPanel.Dock="Right"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
